@@ -1,7 +1,10 @@
 package com.rv.society.controllers;
 
 import com.rv.society.domain.Message;
+import com.rv.society.domain.User;
 import com.rv.society.repos.MessageRepo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,14 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController {
+    private final MessageRepo messageRepo;
 
-
-    private MessageRepo messageRepo;
-
-    public MainController(MessageRepo messageRepo) {
-        this.messageRepo = messageRepo;
-    }
 
     @GetMapping("/")
     public String greeting(Map<String, Object> model) {
@@ -38,9 +37,12 @@ public class MainController {
     }
 
     @PostMapping("/main")
-    public String add(@RequestParam String text, @RequestParam String tag, Map<String, Object> model) {
+    public String add(
+            @AuthenticationPrincipal User user,
+            @RequestParam String text,
+            @RequestParam String tag, Map<String, Object> model) {
         //взяли из введенной в форму текст и тег, сохранили в БД
-        Message message = new Message(text, tag);
+        Message message = new Message(text, tag, user);
         messageRepo.save(message);
 //засунули в форму результат, т.е. в списке всех сообщений добавиться новое введенное
         Iterable<Message> messages = messageRepo.findAll();

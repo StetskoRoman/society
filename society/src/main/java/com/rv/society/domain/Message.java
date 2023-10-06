@@ -1,9 +1,6 @@
 package com.rv.society.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 
@@ -20,7 +17,18 @@ public class Message {
     private String text;
     private String tag;
 
-    public Message(String text, String tag) {
+    //много сообщений у одного автора может быть, подгружаются сразу все сообщения одного автора, к таблице сообщений прибавили колонку c названием user_id (по умолчанию было бы autor_id)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    //Этот метод передаваться будет в шаблон, т.к. не у всех сообщений могут быть авторы
+    public String getAuthorName() {
+        return author != null ? author.getUsername() : "<none>";
+    }
+
+    public Message(String text, String tag, User user) {
+        this.author = user;
         this.text = text;
         this.tag = tag;
     }

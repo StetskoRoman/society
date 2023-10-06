@@ -3,6 +3,7 @@ package com.rv.society.controllers;
 import com.rv.society.domain.Role;
 import com.rv.society.domain.User;
 import com.rv.society.repos.UserRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,13 +12,10 @@ import java.util.Collections;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class RegistrationController {
 
     private final UserRepo userRepo;
-
-    public RegistrationController(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
 
     @GetMapping("/registration")
     public String registration() {
