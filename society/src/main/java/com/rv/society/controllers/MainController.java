@@ -2,7 +2,6 @@ package com.rv.society.controllers;
 
 import com.rv.society.domain.Message;
 import com.rv.society.repos.MessageRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,23 +11,22 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class GreetingController {
+public class MainController {
 
 
     private MessageRepo messageRepo;
 
-    public GreetingController(MessageRepo messageRepo) {
+    public MainController(MessageRepo messageRepo) {
         this.messageRepo = messageRepo;
     }
 
-    @GetMapping("/greeting")
-    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "Stranger") String name,
-                           Map<String, Object> model) {
-        model.put("name", name);
+    @GetMapping("/")
+    public String greeting(Map<String, Object> model) {
+
         return "greeting";
     }
 
-    @GetMapping
+    @GetMapping("/main")
     public String main(Map<String, Object> model) {
 
         //нашли все сообщения из репозитория
@@ -39,7 +37,7 @@ public class GreetingController {
         return "main";
     }
 
-    @PostMapping
+    @PostMapping("/main")
     public String add(@RequestParam String text, @RequestParam String tag, Map<String, Object> model) {
         //взяли из введенной в форму текст и тег, сохранили в БД
         Message message = new Message(text, tag);
