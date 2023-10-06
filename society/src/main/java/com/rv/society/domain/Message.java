@@ -27,7 +27,12 @@ public class Message {
         return author != null ? author.getUsername() : "<none>";
     }
 
-    public Message(String text, String tag, User user) {
+//    public Message(String text, String tag) {
+//        this.text = text;
+//        this.tag = tag;
+//    }
+
+        public Message(String text, String tag, User user) {
         this.author = user;
         this.text = text;
         this.tag = tag;

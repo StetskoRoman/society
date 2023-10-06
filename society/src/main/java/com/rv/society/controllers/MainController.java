@@ -43,6 +43,7 @@ public class MainController {
             @RequestParam String tag, Map<String, Object> model) {
         //взяли из введенной в форму текст и тег, сохранили в БД
         Message message = new Message(text, tag, user);
+//        Message message = new Message(text, tag);
         messageRepo.save(message);
 //засунули в форму результат, т.е. в списке всех сообщений добавиться новое введенное
         Iterable<Message> messages = messageRepo.findAll();
