@@ -70,7 +70,7 @@ public class MainController {
 //            Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным
             String uuidFile = UUID.randomUUID().toString();
             System.out.println("uuidFile "+uuidFile);
-            String resultFileName = uuidFile + "." + file.getOriginalFilename();
+            String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();
             System.out.println("resultFileName " +resultFileName);
             file.transferTo(new File(uploadPath + "/" + resultFileName));  //загружаем файл
             message.setFilename(resultFileName);
@@ -80,7 +80,7 @@ public class MainController {
 //засунули в форму результат, т.е. в списке всех сообщений добавиться новое введенное
         Iterable<Message> messages = messageRepo.findAll();
         model.put("messages", messages);
-        return "main";
+        return "redirect:/main";
     }
 
 //    @PostMapping("filter")
