@@ -4,12 +4,15 @@
 <@c.page>
     <div>
         <@l.logout/>
+        <span><a href="/user" > User list </a> </span>
     </div>
 
     <div>
-        <form method="post">
+<#--   enctype="multipart/form-data" позволяет файлы передавать     -->
+        <form method="post" enctype="multipart/form-data">
             <input type="text" name="text" placeholder="Write message"/><br>
-            <input type="text" name="tag" placeholder="Tag@">
+            <input type="text" name="tag" placeholder="Tag@"><br>
+            <input type="file" name="file">
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
             <button type="submit">Add message</button>
         </form>
@@ -28,6 +31,12 @@
             <span>${message.text}</span>
             <i>${message.tag}</i>
             <strong>${message.authorName}</strong>
+            <div>
+<#--        <#if message.filename??> здесь ?? - это приведение к типу boolean        -->
+                <#if message.filename??>
+                    <img src="/img/${message.filename}">
+                </#if>
+            </div>
         </div>
     <#else> No messages
     </#list>

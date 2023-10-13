@@ -21,6 +21,8 @@ public class Message {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User author;
+//храним только имя файла т.к. путь указан в проперти
+    private String filename;
 
     //Этот метод передаваться будет в шаблон, т.к. не у всех сообщений могут быть авторы
     public String getAuthorName() {

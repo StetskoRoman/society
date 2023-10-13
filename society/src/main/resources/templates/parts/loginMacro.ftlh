@@ -1,5 +1,6 @@
 <#macro loginMacro path>
 <#--login - название, path - переменная, до этого был action="/login", конкретный адрес куда перейти надо при подтверждении логина -->
+<#--    скорей всего здесь косяк с изменением роли пользователся-->
     <form action="${path}" method="post">
         <div><label> User Name : <input type="text" name="username"/> </label></div>
         <div><label> Password: <input type="password" name="password"/> </label></div>

@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -29,6 +30,7 @@ public class User implements UserDetails {
 
     //создать табличку user_role куда загрузить все роли и добавить колонку user_id
     //а вообще сделал бы репозиторий для ролей как нормальный чел в repos и не запарывался бы
+//    @ManyToMany(cascade = CascadeType.ALL)
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
