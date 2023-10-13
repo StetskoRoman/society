@@ -14,8 +14,9 @@
 
     </head>
     <body>
+    <#include "navbar.ftlh">
 <#--    сюда весь вложенный код ложиться будет-->
-<div class="container">
+<div class="container mt-5">
     <#nested>
 </div>
 

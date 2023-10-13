@@ -27,7 +27,6 @@ public class User implements UserDetails {
     private String password;
     private boolean active;
 
-
     //создать табличку user_role куда загрузить все роли и добавить колонку user_id
     //а вообще сделал бы репозиторий для ролей как нормальный чел в repos и не запарывался бы
 //    @ManyToMany(cascade = CascadeType.ALL)
@@ -35,6 +34,10 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    public boolean isAdmin() {
+        return roles.contains(Role.ADMIN);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

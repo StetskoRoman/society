@@ -42,6 +42,24 @@ public class WebSecurityConfig {
     @Autowired
     private UserService userService;
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/", "/registration","/static/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                        .permitAll()
+                )
+
+                .logout((logout) -> logout.permitAll());
+
+
+        return http.build();
+    }
+
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
@@ -89,21 +107,8 @@ public class WebSecurityConfig {
 //                .authoritiesByUsernameQuery("select u.username, ur.roles from usr u inner join user_role ur on u.id = ur.user_id where u.username=?");
 //    }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration","/static/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                )
-                .logout((logout) -> logout.permitAll());
+//    "" c ним ошибка вылазит при первом входе
 
-        return http.build();
-    }
 
     //Менеджер учетных записей, создает пользователя с такими параметрами для отладки приложения, только и всего!
 //    @Bean
