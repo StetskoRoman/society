@@ -14,6 +14,15 @@
                 <input type="password" name="password" class="form-control" placeholder="Password" />
             </div>
         </div>
+<#-- email       Отображается поля только на поле регистрации-->
+        <#if isRegisterForm>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">email:</label>
+            <div class="col-sm-6">
+                <input type="email" name="email" class="form-control" placeholder="some@some.com" />
+            </div>
+        </div>
+        </#if>
         <input type="hidden" name="_csrf" value="${_csrf.token}" />
 <#--        ссылка показывается только это если не форма регистрации, т. е. на форме логина ссылка будет, на форме регистрации нет-->
         <#if !isRegisterForm><a href="/registration">Add new user</a></#if>

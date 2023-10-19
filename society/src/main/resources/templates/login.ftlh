@@ -2,6 +2,7 @@
 <#import "parts/loginMacro.ftlh" as l>
 
 <@c.page>
+    ${message!""}
     <@l.login "/login" false/>
 </@c.page>
 

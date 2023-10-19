@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
+//@PreAuthorize("hasAuthority('ADMIN')")
 public class UserController {
 
     private final UserRepo userRepo;
@@ -33,6 +34,35 @@ public class UserController {
         model.addAttribute("roles", Role.values());
         return "userEdit";
     }
+
+
+    @PostMapping()
+    public String userSave(
+            @RequestParam String username,
+            @RequestParam Map<String, String> form,
+            @RequestParam("userId") User user
+    ) {
+        user.setUsername(username);
+
+        Set<String> roles = Arrays.stream(Role.values())
+                .map(Role::name)
+                .collect(Collectors.toSet());
+
+        user.getRoles().clear();
+
+        for (String key : form.keySet()) {
+            if (roles.contains(key)) {
+                user.getRoles().add(Role.valueOf(key));
+            }
+        }
+
+        userRepo.save(user);
+
+        return "redirect:/user";
+    }
+}
+
+
 
 //    @PostMapping
 //    public String userSave(
@@ -61,28 +91,3 @@ public class UserController {
 //
 //        return "redirect:/user";
 //    }
-    @PostMapping()
-    public String userSave(
-            @RequestParam String username,
-            @RequestParam Map<String, String> form,
-            @RequestParam("userId") User user
-    ) {
-        user.setUsername(username);
-
-        Set<String> roles = Arrays.stream(Role.values())
-                .map(Role::name)
-                .collect(Collectors.toSet());
-
-        user.getRoles().clear();
-
-        for (String key : form.keySet()) {
-            if (roles.contains(key)) {
-                user.getRoles().add(Role.valueOf(key));
-            }
-        }
-
-        userRepo.save(user);
-
-        return "redirect:/user";
-    }
-}

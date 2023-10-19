@@ -67,7 +67,7 @@ public class MainController {
 //                Обезопасим проверкой есть ли папка для загрузки файлов
                 uploadDir.mkdir();
             }
-//            Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным
+//            Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным, хотя лучше бы отдельное репо под картинки
             String uuidFile = UUID.randomUUID().toString();
             System.out.println("uuidFile "+uuidFile);
             String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();

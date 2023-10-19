@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -26,6 +24,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private boolean active;
+
+    private String email;
+    private String activationCode;
 
     //создать табличку user_role куда загрузить все роли и добавить колонку user_id
     //а вообще сделал бы репозиторий для ролей как нормальный чел в repos и не запарывался бы
