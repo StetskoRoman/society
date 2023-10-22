@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String text;
@@ -35,4 +35,6 @@ public class Message {
         this.text = text;
         this.tag = tag;
     }
+
+
 }

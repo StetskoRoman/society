@@ -4,6 +4,7 @@ known = SPRING_SECURITY_CONTEXT??
 
 <#if known>
     <#assign
+<#--        тут описывается юзер только если он авторизован (тот принципал что вставляется в методы из контекста)-->
     user = SPRING_SECURITY_CONTEXT.authentication.principal
     name = user.getUsername()
     isAdmin = user.isAdmin()

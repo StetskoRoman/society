@@ -30,8 +30,9 @@ public class RegistrationController {
             //если в БД такой юзер существует то на страницу передадим сообзение
             model.put("message", "User already exist!");
             return "registration";
+        } else {
+            model.put("message", "User was successfully created");
         }
-
 
         return "redirect:/login";
     }

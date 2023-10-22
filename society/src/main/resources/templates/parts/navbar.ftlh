@@ -25,6 +25,12 @@
                 <a class="nav-link" href="/user">User list </a>
             </li>
             </#if>
+<#--     ?? - приведение к булеву типу, если да то If дальше идет       -->
+            <#if user??>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/user/profile">Profile </a>
+                </li>
+            </#if>
         </ul>
 <#--        имя пользователя отобразит у кнопки выхода-->
         <div class="navbar-text mr-3">${name}</div>
