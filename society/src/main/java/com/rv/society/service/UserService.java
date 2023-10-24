@@ -35,6 +35,10 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
+//        чтобы неавторизованные не заходили
+        if (!(user.getActivationCode() == null)) {
+            throw new SecurityException("User is not activated");
+        }
 
         return user;
     }
