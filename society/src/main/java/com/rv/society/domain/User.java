@@ -1,6 +1,9 @@
 package com.rv.society.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,10 +24,20 @@ public class User implements UserDetails {
     @GeneratedValue
     private Long id;
 
+    @NotNull
+    @NotBlank(message = "username can`t be empty")
     private String username;
+
+    @NotNull
+    @NotBlank(message = "password can`t be empty")
     private String password;
+
+    @Transient
+    @NotBlank(message = "password confirmation can`t be empty")
+    private String password2;
     private boolean active;
 
+    @Email(message = "email is`t correct")
     private String email;
     private String activationCode;
 

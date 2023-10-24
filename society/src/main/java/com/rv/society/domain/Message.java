@@ -1,6 +1,9 @@
 package com.rv.society.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 
@@ -14,7 +17,14 @@ public class Message {
     @GeneratedValue
     private Long id;
 
+    @NotNull
+    @NotBlank(message = "fill the message")
+    @Size(max = 2048, message = "limit of signs in message")
     private String text;
+
+    @NotBlank
+    @NotNull
+    @Size(max = 255, message = "limit of signs in tag")
     private String tag;
 
     //много сообщений у одного автора может быть, подгружаются сразу все сообщения одного автора, к таблице сообщений прибавили колонку c названием user_id (по умолчанию было бы autor_id)

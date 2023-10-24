@@ -3,11 +3,15 @@ package com.rv.society.controllers;
 import com.rv.society.domain.Message;
 import com.rv.society.domain.User;
 import com.rv.society.repos.MessageRepo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,13 +21,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+//@Validated - сделает что надо но будет просто ошибка возвращаться при ошибке валидации где либо
+//@Validated
 @Controller
 @RequiredArgsConstructor
 public class MainController {
     private final MessageRepo messageRepo;
 
-//   @Value("${upload.path}") говорим что хотим получить переменную из контекста в пропертис, т. е.  uploadPath будет upload.path=/Program/Projects/MyProjects/Twitter imitation/society/src/main/resources/static/files
+    //   @Value("${upload.path}") говорим что хотим получить переменную из контекста в пропертис, т. е.  uploadPath будет upload.path=/Program/Projects/MyProjects/Twitter imitation/society/src/main/resources/static/files
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -50,38 +58,135 @@ public class MainController {
         return "main";
     }
 
-
-
     @PostMapping("/main")
     public String add(
             @AuthenticationPrincipal User user,
-            @RequestParam String text,
-            @RequestParam String tag, Map<String, Object> model,
+            @Valid Message message,
+//     BindingResult bindingResult хранит список аргументов и значения ошибок валидации, Всегда идет только ПЕРЕД Model model,
+            BindingResult bindingResult,
+            Model model,
             @RequestParam("file") MultipartFile file) throws IOException {
         //взяли из введенной в форму текст и тег, сохранили в БД
-        Message message = new Message(text, tag, user);
+        message.setAuthor(user);
+//  если у BindingResult ошибки то не пойдет дальше метод
+        if (bindingResult.hasErrors()) {
 
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-//                Обезопасим проверкой есть ли папка для загрузки файлов
-                uploadDir.mkdir();
+            Map<String, String> errorMap = ControllerUtils.getErrors(bindingResult);
+//            положили ошибки в модель
+            model.mergeAttributes(errorMap);
+            model.addAttribute("message", message);
+
+        } else {
+            if (file != null && !file.getOriginalFilename().isEmpty()) {
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+//            Обезопасим проверкой есть ли папка для загрузки файлов
+                    uploadDir.mkdir();
+                }
+//     Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным, хотя лучше бы отдельное репо под картинки
+                String uuidFile = UUID.randomUUID().toString();
+                System.out.println("uuidFile " + uuidFile);
+                String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();
+                System.out.println("resultFileName " + resultFileName);
+                file.transferTo(new File(uploadPath + "/" + resultFileName));  //загружаем файл
+                message.setFilename(resultFileName);
             }
-//            Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным, хотя лучше бы отдельное репо под картинки
-            String uuidFile = UUID.randomUUID().toString();
-            System.out.println("uuidFile "+uuidFile);
-            String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();
-            System.out.println("resultFileName " +resultFileName);
-            file.transferTo(new File(uploadPath + "/" + resultFileName));  //загружаем файл
-            message.setFilename(resultFileName);
+
+            model.addAttribute("message", null);
+            messageRepo.save(message);
         }
-//        Message message = new Message(text, tag);
-        messageRepo.save(message);
 //засунули в форму результат, т.е. в списке всех сообщений добавиться новое введенное
         Iterable<Message> messages = messageRepo.findAll();
-        model.put("messages", messages);
+        model.addAttribute("messages", messages);
         return "redirect:/main";
     }
+
+//    @PostMapping("/main")
+//    public String add(
+//            @AuthenticationPrincipal User user,
+//            @Valid Message message,
+//            BindingResult bindingResult,
+//            Model model,
+//            @RequestParam("file") MultipartFile file
+//    ) throws IOException {
+//        message.setAuthor(user);
+//
+//        if (bindingResult.hasErrors()) {
+//            Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
+//
+//            model.mergeAttributes(errorsMap);
+//            model.addAttribute("message", message);
+//        } else {
+//            if (file != null && !file.getOriginalFilename().isEmpty()) {
+//                File uploadDir = new File(uploadPath);
+//
+//                if (!uploadDir.exists()) {
+//                    uploadDir.mkdir();
+//                }
+//
+//                String uuidFile = UUID.randomUUID().toString();
+//                String resultFilename = uuidFile + "." + file.getOriginalFilename();
+//
+//                file.transferTo(new File(uploadPath + "/" + resultFilename));
+//
+//                message.setFilename(resultFilename);
+//            }
+//
+//            model.addAttribute("message", null);
+//
+//            messageRepo.save(message);
+//        }
+//
+//        Iterable<Message> messages = messageRepo.findAll();
+//
+//        model.addAttribute("messages", messages);
+//
+//        return "main";
+//    }
+
+
+//    @PostMapping("/main")
+//    public String add(
+//            @AuthenticationPrincipal User user,
+//            @Valid Message message,
+////     BindingResult bindingResult хранит список аргументов и значения ошибок валидации, Всегда идет только ПЕРЕД Model model,
+//            BindingResult bindingResult,
+//            Model model,
+//            @RequestParam("file") MultipartFile file) throws IOException {
+//        //взяли из введенной в форму текст и тег, сохранили в БД
+//        message.setAuthor(user);
+////  если у BindingResult ошибки то не пойдет дальше метод
+//        if (bindingResult.hasErrors()) {
+//
+//            Map<String, String> errorMap = ControllerUtils.getErrors(bindingResult);
+////            положили ошибки в модель
+//            model.mergeAttributes(errorMap);
+//            model.addAttribute("message", message);
+//
+//        } else {
+//            if (file != null && !file.getOriginalFilename().isEmpty()) {
+//                File uploadDir = new File(uploadPath);
+//                if (!uploadDir.exists()) {
+////            Обезопасим проверкой есть ли папка для загрузки файлов
+//                    uploadDir.mkdir();
+//                }
+////     Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным, хотя лучше бы отдельное репо под картинки
+//                String uuidFile = UUID.randomUUID().toString();
+//                System.out.println("uuidFile " + uuidFile);
+//                String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();
+//                System.out.println("resultFileName " + resultFileName);
+//                file.transferTo(new File(uploadPath + "/" + resultFileName));  //загружаем файл
+//                message.setFilename(resultFileName);
+//            }
+////        Message message = new Message(text, tag);
+//            messageRepo.save(message);
+//        }
+////засунули в форму результат, т.е. в списке всех сообщений добавиться новое введенное
+//        Iterable<Message> messages = messageRepo.findAll();
+//        model.addAttribute("messages", messages);
+//        return "redirect:/main";
+//    }
+
 
 //    @PostMapping("filter")
 //    public String filter(@RequestParam String filter, Map<String, Object> model) {

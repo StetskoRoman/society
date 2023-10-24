@@ -30,11 +30,13 @@ public class UserService implements UserDetailsService {
     // этот был изначально
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        без активации не будет пускать!
-//        if (userRepo.findByUsername(username).getActivationCode() != null) {
-//            return null;
-//        }
-        return userRepo.findByUsername(username);
+
+        User user = userRepo.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        return user;
     }
 
     public boolean addUser(User user) {
