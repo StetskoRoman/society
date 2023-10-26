@@ -4,17 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Data
+//@Getter
+//@Setter
 @Table(name = "usr")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,6 +47,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+// mappedBy = "author" - как поле называется в КЛАССЕ, cascade = CascadeType.ALL - юзера удалил - его все сообщения тоже удалятся
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Message> messages;
+
     public boolean isAdmin() {
         return roles.contains(Role.ADMIN);
     }
@@ -74,4 +79,33 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isActive();
     }
+
+
+//    по совету из комментов
+//    private static final long serialVersionUID = 7808869389416124037L;
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof User user)) return false;
+//        return Objects.equals(getId(), user.getId());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(getId());
+//    }
+
+    //    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        User user = (User) o;
+//        return id.equals(user.id) && username.equals(user.username);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, username);
+//    }
 }

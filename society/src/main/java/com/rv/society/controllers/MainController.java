@@ -3,16 +3,19 @@ package com.rv.society.controllers;
 import com.rv.society.domain.Message;
 import com.rv.society.domain.User;
 import com.rv.society.repos.MessageRepo;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -44,7 +48,7 @@ public class MainController {
 
     @GetMapping("/main")
     public String main(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
-        Iterable<Message> messages = messageRepo.findAll();
+        Iterable<Message> messages;
 
         if (filter != null && !filter.isEmpty()) {
             messages = messageRepo.findByTag(filter);
@@ -77,20 +81,7 @@ public class MainController {
             model.addAttribute("message", message);
 
         } else {
-            if (file != null && !file.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-//            Обезопасим проверкой есть ли папка для загрузки файлов
-                    uploadDir.mkdir();
-                }
-//     Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным, хотя лучше бы отдельное репо под картинки
-                String uuidFile = UUID.randomUUID().toString();
-                System.out.println("uuidFile " + uuidFile);
-                String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();
-                System.out.println("resultFileName " + resultFileName);
-                file.transferTo(new File(uploadPath + "/" + resultFileName));  //загружаем файл
-                message.setFilename(resultFileName);
-            }
+            saveFile(message, file);
 
             model.addAttribute("message", null);
             messageRepo.save(message);
@@ -100,6 +91,73 @@ public class MainController {
         model.addAttribute("messages", messages);
         return "redirect:/main";
     }
+
+    private void saveFile(Message message, MultipartFile file) throws IOException {
+        if (file != null && !file.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+//            Обезопасим проверкой есть ли папка для загрузки файлов
+                uploadDir.mkdir();
+            }
+//     Здесь страхуемся от коллизии UUID = universe unic id, каждый файл будет отличным, хотя лучше бы отдельное репо под картинки
+            String uuidFile = UUID.randomUUID().toString();
+            System.out.println("uuidFile " + uuidFile);
+            String resultFileName = uuidFile + ".jpg" + file.getOriginalFilename();
+            System.out.println("resultFileName " + resultFileName);
+            file.transferTo(new File(uploadPath + "/" + resultFileName));  //загружаем файл
+            message.setFilename(resultFileName);
+        }
+    }
+
+    // {user} сюда вставиться    @PathVariable User user        (@PathVariable(name = "user") если переменные не совпадают
+//     @RequestParam Message message  из юрла возьмет значение самого сообщения
+
+    @GetMapping("/user-messages/{user}")
+    public String userMessage(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable User user,
+            Model model,
+            @RequestParam(required = false) Message message
+    ) {
+//        Здесь сообщения не передаются, настроить метод просто надо наверное
+        Set<Message> messages = user.getMessages();
+//        System.out.println("user = " + user);
+//        System.out.println("messages = " + messages);
+        model.addAttribute("messages", messages);
+        model.addAttribute("message", message);
+// .equals в юзере должен быть переопределен (@Data делает сама)   тут определяем поля  <#if isCurrentUser??> в userMessages,  equals возвращает boolean
+        model.addAttribute("isCurrentUser", currentUser.equals(user));
+
+        return "userMessages";
+    }
+
+//    @PathVariable Long user - id вернет...   тут собщение меняем и сохраняем
+    @PostMapping("/user-messages/{user}")
+    public String updateMessage(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long user,
+            @RequestParam("id") Message message,
+            @RequestParam("text") String text,
+            @RequestParam("tag") String tag,
+            @RequestParam(value = "file", required = false) MultipartFile file
+
+    ) throws IOException {
+        if (message.getAuthor().equals(currentUser)) {
+            if (!StringUtils.isEmpty(text)) {
+                message.setText(text);
+            }
+            if (!StringUtils.isEmpty(tag)) {
+                message.setTag(tag);
+
+            }
+            saveFile(message, file);
+            messageRepo.save(message);
+        }
+
+        return "redirect:/user-messages/" + user;
+
+    }
+}
 
 //    @PostMapping("/main")
 //    public String add(
@@ -204,4 +262,4 @@ public class MainController {
 //    }
 
 
-}
+

@@ -16,9 +16,16 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/">Home </a>
             </li>
+<#--  <#if user??>  видна вкладка в баре только тем кто зашел, юзер определяется из контекста, если его нет, то и вкладки не будет        -->
+            <#if user??>
             <li class="nav-item active">
                 <a class="nav-link" href="/main">Messages </a>
             </li>
+<#--            сюда список своих сообщений, сюда id надо подставить пользователя, проще будет в секьюрити добавить id в контекст ${} -> currentUserId появилась-->
+            <li class="nav-item active">
+                <a class="nav-link" href="/user-messages/${currentUserId}">My messages</a>
+            </li>
+            </#if>
 <#--            только у аdмина будет доступ к странице ролей-->
             <#if isAdmin>
             <li class="nav-item active">

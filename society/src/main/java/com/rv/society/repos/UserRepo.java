@@ -10,4 +10,6 @@ public interface UserRepo extends CrudRepository<User, Long> {
 
     User findByActivationCode(String code);
 
+
+
 }

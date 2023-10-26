@@ -1,18 +1,22 @@
+<#--штука которая будет хранить контекст авторизованного пользователя, который можно будет использовать везде куда просто <#include "security.ftlh">-->
 <#assign
 known = SPRING_SECURITY_CONTEXT??
 >
 
 <#if known>
     <#assign
-<#--        тут описывается юзер только если он авторизован (тот принципал что вставляется в методы из контекста)-->
+    <#--        тут описывается юзер только если он авторизован (тот принципал что вставляется в методы из контекста)-->
     user = SPRING_SECURITY_CONTEXT.authentication.principal
     name = user.getUsername()
+    currentUserId = user.getId()
     isAdmin = user.isAdmin()
     >
+<#--    cлучай для неавторизованного   currentUserId = -1 ни одному пользователю не соответствует-->
 <#else>
     <#assign
     name = "unknown"
     isAdmin = false
+    currentUserId = -1
     >
 </#if>
 
