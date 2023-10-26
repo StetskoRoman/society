@@ -26,17 +26,16 @@ import java.util.UUID;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
-
-    private String myKey = UUID.randomUUID().toString();
-
     @Autowired
     private UserService userService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+//    https://docs.spring.io/spring-security/reference/servlet/authentication/rememberme.html
     @Autowired
     private RememberMeServices rememberMeServices;
+    private String myKey = UUID.randomUUID().toString();
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -73,7 +72,7 @@ public class WebSecurityConfig {
         return daoAuthenticationProvider;
     }
 
-//    for remember
+//    for remember me
     @Bean
     RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
         TokenBasedRememberMeServices.RememberMeTokenAlgorithm encodingAlgorithm = TokenBasedRememberMeServices.RememberMeTokenAlgorithm.SHA256;
