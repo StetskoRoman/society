@@ -2,9 +2,9 @@
 <#import "parts/loginMacro.ftlh" as l>
 
 <@c.page>
-    <#if Session?? && Session.SPRING_SECURITY_LAST_EXCEPTION??>
+    <#if Session?? && SPRING_SECURITY_LAST_EXCEPTION??>
         <div class="alert alert-danger" role="alert">
-            ${Session.SPRING_SECURITY_LAST_EXCEPTION.message}
+            ${SPRING_SECURITY_LAST_EXCEPTION.message}
         </div>
     </#if>
     <#if message??>

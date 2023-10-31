@@ -6,13 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.io.Serializable;
 
 
 @Data
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class Message  {
     @Id
     @GeneratedValue
     private Long id;

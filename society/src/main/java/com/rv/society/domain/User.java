@@ -8,7 +8,9 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,7 +21,7 @@ import java.util.Set;
 @Table(name = "usr")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User implements UserDetails{
 
     @Id
     @GeneratedValue
@@ -48,8 +50,27 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
 // mappedBy = "author" - как поле называется в КЛАССЕ, cascade = CascadeType.ALL - юзера удалил - его все сообщения тоже удалятся
+//    @Transient
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Message> messages;
+
+//   создать новую табл user_subscriptions, это те что подписаны на тебя, одна таблица для подписчиков на теья и подписок твоих
+    @ManyToMany
+    @JoinTable(
+            name = "user_subscriptions",
+            joinColumns = { @JoinColumn(name = "subscriber_id") },
+            inverseJoinColumns = { @JoinColumn(name = "channel_id") }
+    )
+    private Set<User> subscribers = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_subscriptions",
+            joinColumns = { @JoinColumn(name = "subscriber_id") },
+            inverseJoinColumns = { @JoinColumn(name = "channel_id") }
+    )
+    private Set<User> subscriptions = new HashSet<>();
+
 
     public boolean isAdmin() {
         return roles.contains(Role.ADMIN);

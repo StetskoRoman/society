@@ -121,8 +121,12 @@ public class MainController {
     ) {
 //        Здесь сообщения не передаются, настроить метод просто надо наверное
         Set<Message> messages = user.getMessages();
-//        System.out.println("user = " + user);
-//        System.out.println("messages = " + messages);
+        model.addAttribute("userChannel", user);
+        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
+        model.addAttribute("subscribersCount", user.getSubscribers().size());
+//        определяем является ли пользователь который пришел на чужую страницу его подписчиком
+        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
+//        System.out.println("messages = " + messages + "  user = " + user + "  current = " + currentUser);
         model.addAttribute("messages", messages);
         model.addAttribute("message", message);
 // .equals в юзере должен быть переопределен (@Data делает сама)   тут определяем поля  <#if isCurrentUser??> в userMessages,  equals возвращает boolean

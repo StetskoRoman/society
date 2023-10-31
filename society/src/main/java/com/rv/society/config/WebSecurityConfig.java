@@ -33,8 +33,8 @@ public class WebSecurityConfig {
     private PasswordEncoder passwordEncoder;
 
 //    https://docs.spring.io/spring-security/reference/servlet/authentication/rememberme.html
-    @Autowired
-    private RememberMeServices rememberMeServices;
+//    @Autowired
+//    private RememberMeServices rememberMeServices;
     private String myKey = UUID.randomUUID().toString();
 
     @Bean
@@ -53,9 +53,9 @@ public class WebSecurityConfig {
                         .loginPage("/login")
                         .permitAll()
                 )
-                .rememberMe((remember) -> remember
-                        .rememberMeServices(rememberMeServices)
-                )
+//                .rememberMe((remember) -> remember
+//                        .rememberMeServices(rememberMeServices)
+//                )
                 .logout((logout) -> logout.permitAll());
 
 
@@ -73,13 +73,13 @@ public class WebSecurityConfig {
     }
 
 //    for remember me
-    @Bean
-    RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
-        TokenBasedRememberMeServices.RememberMeTokenAlgorithm encodingAlgorithm = TokenBasedRememberMeServices.RememberMeTokenAlgorithm.SHA256;
-        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(myKey, userDetailsService, encodingAlgorithm);
-        rememberMe.setMatchingAlgorithm(TokenBasedRememberMeServices.RememberMeTokenAlgorithm.MD5);
-        return rememberMe;
-    }
+//    @Bean
+//    RememberMeServices rememberMeServices(UserDetailsService userDetailsService) {
+//        TokenBasedRememberMeServices.RememberMeTokenAlgorithm encodingAlgorithm = TokenBasedRememberMeServices.RememberMeTokenAlgorithm.SHA256;
+//        TokenBasedRememberMeServices rememberMe = new TokenBasedRememberMeServices(myKey, userDetailsService, encodingAlgorithm);
+//        rememberMe.setMatchingAlgorithm(TokenBasedRememberMeServices.RememberMeTokenAlgorithm.MD5);
+//        return rememberMe;
+//    }
 
 
     @Bean
