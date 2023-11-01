@@ -33,6 +33,6 @@ public class MVCConfig implements WebMvcConfigurer {
                 .addResourceLocations("file://" + uploadPath + "/");
 //        "/static/**" при обращении по этому пути ресурсы будут искаться в дереве проекта
         registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static");
+                .addResourceLocations("classpath:/static/");
     }
 }
