@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 
 @Data
+@ToString(of = {"id", "text", "tag"})
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor

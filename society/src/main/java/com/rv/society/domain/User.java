@@ -16,6 +16,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@ToString(of = {"id", "username", "active", "email"})
 //@Getter
 //@Setter
 @Table(name = "usr")
