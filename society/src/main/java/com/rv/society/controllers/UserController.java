@@ -70,7 +70,7 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-    @GetMapping("subscribe/{user}")
+    @GetMapping("/subscribe/{user}")
     public String subscribe(
             @AuthenticationPrincipal User currentUser,
             @PathVariable User user
@@ -80,7 +80,7 @@ public class UserController {
         return "redirect:/user-messages/" + user.getId();
     }
 
-    @GetMapping("unsubscribe/{user}")
+    @GetMapping("/unsubscribe/{user}")
     public String unsubscribe(
             @AuthenticationPrincipal User currentUser,
             @PathVariable User user
@@ -90,7 +90,7 @@ public class UserController {
         return "redirect:/user-messages/" + user.getId();
     }
 
-    @GetMapping("{type}/{user}/list")
+    @GetMapping("/{type}/{user}/list")
     public String userList(
             Model model,
             @PathVariable User user,
@@ -107,7 +107,7 @@ public class UserController {
 
         return "subscriptions";
     }
-
+}
 //    @GetMapping("subscribe/{user}")
 //    public String subscribe(
 //            @AuthenticationPrincipal User currentUser,
@@ -148,7 +148,7 @@ public class UserController {
 //        return "subscriptions";
 //    }
 
-}
+
 
 
 // user.setUsername(username);
