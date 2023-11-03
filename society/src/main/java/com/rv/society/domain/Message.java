@@ -1,5 +1,7 @@
 package com.rv.society.domain;
 
+import com.rv.society.domain.dto.MessageDto;
+import com.rv.society.domain.util.MessageHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Data
@@ -36,9 +40,16 @@ public class Message  {
 //храним только имя файла т.к. путь указан в проперти
     private String filename;
 
+    @ManyToMany
+    @JoinTable(name = "message_likes",
+            joinColumns = {@JoinColumn(name = "message_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    )
+    private Set<User> likes = new HashSet<>();
+
     //Этот метод передаваться будет в шаблон, т.к. не у всех сообщений могут быть авторы
     public String getAuthorName() {
-        return author != null ? author.getUsername() : "<none>";
+        return MessageHelper.getAuthorName(author);
     }
 
 
