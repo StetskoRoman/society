@@ -78,7 +78,9 @@ public class MainController {
 //     BindingResult bindingResult хранит список аргументов и значения ошибок валидации, Всегда идет только ПЕРЕД Model model,
             BindingResult bindingResult,
             Model model,
-            @RequestParam("file") MultipartFile file) throws IOException {
+            @RequestParam("file") MultipartFile file,
+            @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable
+    ) throws IOException {
         //взяли из введенной в форму текст и тег, сохранили в БД
         message.setAuthor(user);
 //  если у BindingResult ошибки то не пойдет дальше метод
@@ -95,9 +97,12 @@ public class MainController {
             model.addAttribute("message", null);
             messageRepo.save(message);
         }
+        model.addAttribute("url", "/main");
+        Page<MessageDto> page = this.messageService.messageList(pageable, "", user); // пустой фильтр
+        model.addAttribute("page", page);
 //засунули в форму результат, т.е. в списке всех сообщений добавиться новое введенное
-        Iterable<Message> messages = messageRepo.findAll();
-        model.addAttribute("messages", messages);
+//        Iterable<Message> messages = messageRepo.findAll();
+//        model.addAttribute("messages", messages);
         return "redirect:/main";
     }
 
