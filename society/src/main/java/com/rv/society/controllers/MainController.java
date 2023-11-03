@@ -3,9 +3,10 @@ package com.rv.society.controllers;
 import com.rv.society.domain.Message;
 import com.rv.society.domain.User;
 import com.rv.society.repos.MessageRepo;
-import jakarta.transaction.Transactional;
+import com.rv.society.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +26,7 @@ import org.springframework.data.domain.Pageable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 //@Validated - сделает что надо но будет просто ошибка возвращаться при ошибке валидации где либо
 //@Validated
@@ -38,6 +34,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MainController {
     private final MessageRepo messageRepo;
+
+    @Autowired
+    private MessageService messageService;
 
     //   @Value("${upload.path}") говорим что хотим получить переменную из контекста в пропертис, т. е.  uploadPath будет upload.path=/Program/Projects/MyProjects/Twitter imitation/society/src/main/resources/static/files
     @Value("${upload.path}")
@@ -56,13 +55,9 @@ public class MainController {
             Model model,
             @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<Message> page;
+        Page<Message> page = messageService.messageList(pageable, filter);
 
-        if (filter != null && !filter.isEmpty()) {
-            page = messageRepo.findByTag(filter, pageable);
-        } else {
-            page = messageRepo.findAll(pageable);
-        }
+
 
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
@@ -71,27 +66,7 @@ public class MainController {
         return "main";
     }
 
-//    @GetMapping("/main")
-//    public String main(
-//            @RequestParam(required = false, defaultValue = "") String filter,
-//            Model model,
-//            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
-//    ) {
-//
-//        Page<Message> page;
-//
-//        if (filter != null && !filter.isEmpty()) {
-//            page = messageRepo.findByTag(filter, pageable);
-//        } else {
-//            page = messageRepo.findAll(pageable);
-//        }
-//
-//        model.addAttribute("page", page);
-//        model.addAttribute("url", "/main");
-//        model.addAttribute("filter", filter);
-//
-//        return "main";
-//    }
+
 
     @PostMapping("/main")
     public String add(
@@ -143,25 +118,27 @@ public class MainController {
     // {user} сюда вставиться    @PathVariable User user        (@PathVariable(name = "user") если переменные не совпадают
 //     @RequestParam Message message  из юрла возьмет значение самого сообщения
 
-    @GetMapping("/user-messages/{user}")
+    @GetMapping("/user-messages/{author}")
     public String userMessage(
             @AuthenticationPrincipal User currentUser,
-            @PathVariable User user,
+            @PathVariable User author,
             Model model,
-            @RequestParam(required = false) Message message
+            @RequestParam(required = false) Message message,
+            @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable
     ) {
 //        Здесь сообщения не передаются, настроить метод просто надо наверное
-        Set<Message> messages = user.getMessages();
-        model.addAttribute("userChannel", user);
-        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
-        model.addAttribute("subscribersCount", user.getSubscribers().size());
+        Page<Message> page = messageService.messageListForUser(pageable, currentUser, author);
+        model.addAttribute("userChannel", author);
+        model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
+        model.addAttribute("subscribersCount", author.getSubscribers().size());
 //        определяем является ли пользователь который пришел на чужую страницу его подписчиком
-        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
+        model.addAttribute("isSubscriber", author.getSubscribers().contains(currentUser));
 //        System.out.println("messages = " + messages + "  user = " + user + "  current = " + currentUser);
-        model.addAttribute("messages", messages);
+        model.addAttribute("page", page);
         model.addAttribute("message", message);
 // .equals в юзере должен быть переопределен (@Data делает сама)   тут определяем поля  <#if isCurrentUser??> в userMessages,  equals возвращает boolean
-        model.addAttribute("isCurrentUser", currentUser.equals(user));
+        model.addAttribute("isCurrentUser", currentUser.equals(author));
+        model.addAttribute("url", "/user-messages/" + author.getId());
 
         return "userMessages";
     }
@@ -193,6 +170,29 @@ public class MainController {
 
     }
 }
+
+
+//    @GetMapping("/main")
+//    public String main(
+//            @RequestParam(required = false, defaultValue = "") String filter,
+//            Model model,
+//            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+//    ) {
+//
+//        Page<Message> page;
+//
+//        if (filter != null && !filter.isEmpty()) {
+//            page = messageRepo.findByTag(filter, pageable);
+//        } else {
+//            page = messageRepo.findAll(pageable);
+//        }
+//
+//        model.addAttribute("page", page);
+//        model.addAttribute("url", "/main");
+//        model.addAttribute("filter", filter);
+//
+//        return "main";
+//    }
 
 //    @PostMapping("/main")
 //    public String add(
