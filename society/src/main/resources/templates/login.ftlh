@@ -12,6 +12,7 @@
             ${message}
         </div>
     </#if>
+<#--    false это параметр  isRegisterForm и он фолс так как не должен показываться при входе в логин-->
     <@l.login "/login" false/>
 </@c.page>
 

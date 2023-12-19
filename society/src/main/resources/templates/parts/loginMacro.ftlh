@@ -1,3 +1,4 @@
+<#-- path и  isRegisterForm это два параметра, если не регистрации форма то будет только имя и пароль, а если регистрации то далее -->
 <#macro login path isRegisterForm>
     <form action="${path}" method="post">
         <div class="form-group row">
