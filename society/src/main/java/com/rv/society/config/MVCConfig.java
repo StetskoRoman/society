@@ -15,7 +15,6 @@ public class MVCConfig implements WebMvcConfigurer {
     @Value("{upload.path}")
     private String uploadPath;
 
-//    https://spring.io/guides/gs/consuming-rest/
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
@@ -31,8 +30,7 @@ public class MVCConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/img/**")
                 .addResourceLocations("file://" + uploadPath + "/");
-//        "/static/**" при обращении по этому пути ресурсы будут искаться в дереве проекта
         registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static");
+                .addResourceLocations("classpath:/static/");
     }
 }

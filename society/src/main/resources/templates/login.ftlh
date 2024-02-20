@@ -2,11 +2,13 @@
 <#import "parts/loginMacro.ftlh" as l>
 
 <@c.page>
+<#--    ошибка с загрузкой логина-->
     <#if Session?? && SPRING_SECURITY_LAST_EXCEPTION??>
         <div class="alert alert-danger" role="alert">
             ${SPRING_SECURITY_LAST_EXCEPTION.message}
         </div>
     </#if>
+<#--    Ошибка с активацией-->
     <#if message??>
         <div class="alert alert-${messageType}" role="alert">
             ${message}
